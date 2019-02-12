@@ -16,6 +16,13 @@ public class Plane : MonoBehaviour
     private float yMouse = 0;
     private float zoomMouse = 0;
     public int zoomSpeed;
+    private GameObject[] edificios;//Declaración
+
+    private void Start()
+    {
+        edificios = GameObject.FindGameObjectsWithTag("Edificio");
+    }
+
     void Update()
     {
         transform.Translate(Vector3.forward * speed);
@@ -29,7 +36,7 @@ public class Plane : MonoBehaviour
         Camera.main.transform.Translate(Vector3.forward * speed);
         Camera.main.transform.LookAt(transform.position);
         Camera.main.fieldOfView = Camera.main.fieldOfView + zoomMouse * zoomSpeed * -1;
-        Camera.main.transform.Translate(Vector3.up * yMouse * 0.01f);
+        //Camera.main.transform.Translate(Vector3.up * yMouse * 0.01f);
         //End camera
 
         transform.Rotate(y, x * angularSpeed, 0);
@@ -46,12 +53,12 @@ public class Plane : MonoBehaviour
             speed = speed + Time.deltaTime * deltaSpeed;
             speed = Mathf.Min(speed, maxSpeed);
         }
-        else if (Input.GetKey(KeyCode.LeftControl))
+        else if (Input.GetKey(KeyCode.LeftAlt))
         {
             speed = speed - Time.deltaTime * deltaSpeed;
             speed = Mathf.Max(speed, 0);
         }
-
+        /*
         if (Input.GetKey(KeyCode.Alpha1))
         {
             cameras[0].gameObject.SetActive(true);
@@ -61,6 +68,33 @@ public class Plane : MonoBehaviour
         {
             cameras[0].gameObject.SetActive(false);
             cameras[1].gameObject.SetActive(true);
+        }
+        */
+        if (Input.GetButton("Fire1"))
+        {
+            print("PULSADO FIRE 1");
+            for (int i = 0; i < edificios.Length; i++)
+            {
+                edificios[i].transform.localScale *= 1.01f;
+            }
+        }
+        if (Input.GetButtonDown("Fire2"))
+        {
+            print("PULSADO FIRE 2");
+            StartCoroutine(Chiquitizar());
+        }
+    }
+    IEnumerator Chiquitizar()
+    {
+        
+        Vector3 initialScale = edificios[0].transform.localScale;
+        for (float s = initialScale.x; s > 1; s -= 0.01f)
+        {
+            for (int i = 0; i < edificios.Length; i++)
+            {
+                edificios[i].transform.localScale = new Vector3(s, s, s);
+            }
+            yield return null;
         }
     }
 }
